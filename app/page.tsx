@@ -4,10 +4,11 @@ import React, { useEffect } from 'react';
 import { Box, Button, Heading, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import useAuth from './hooks/useAuth'; // Adjust the path as necessary
+import { auth } from './firebase'; // Import the auth object
 
 const Home: React.FC = () => {
   const router = useRouter();
-  const { user, loading } = useAuth(); // Assuming useAuth provides user and loading status
+  const { user, loading } = useAuth(auth!); // Assuming useAuth provides user and loading status
 
   useEffect(() => {
     if (!loading && user) {

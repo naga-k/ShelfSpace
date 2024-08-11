@@ -1,18 +1,22 @@
 // app/firebase.tsx
 
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAnalytics, isSupported } from 'firebase/analytics';
-import { FirebaseApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeApp, FirebaseApp } from 'firebase/app';
+import { getAnalytics, Analytics } from 'firebase/analytics';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
 
-let firebaseApp: FirebaseApp | null = null;
-let firestore: ReturnType<typeof getFirestore> | null = null;
-let analytics: ReturnType<typeof getAnalytics> | null = null;
-let auth: ReturnType<typeof getAuth> | null = null;
+export interface User {
+  uid: string;
+  email: string | null;
+  // Add other properties as needed
+}
+
+let firebaseApp: FirebaseApp | undefined;
+let firestore: Firestore | undefined;
+let analytics: Analytics | undefined;
+let auth: Auth | undefined;
 
 const initializeFirebase = async () => {
-
   if (!firebaseApp) {
     // Initialize Firebase only once
     const firebaseConfig = {
@@ -22,22 +26,14 @@ const initializeFirebase = async () => {
       storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
       messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
       appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+      measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
     };
 
     firebaseApp = initializeApp(firebaseConfig);
-    firestore = getFirestore(firebaseApp);
     auth = getAuth(firebaseApp);
-
-    try {
-      if (await isSupported()) {
-        analytics = getAnalytics(firebaseApp);
-      }
-    } catch (error) {
-      console.warn('Analytics is not supported:', error);
-    }
+    firestore = getFirestore(firebaseApp);
+    analytics = getAnalytics(firebaseApp);
   }
 };
 
-initializeFirebase();
-
-export { firestore, analytics, auth };
+export { firebaseApp, auth, firestore, analytics, initializeFirebase };

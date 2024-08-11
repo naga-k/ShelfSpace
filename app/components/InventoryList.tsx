@@ -1,4 +1,7 @@
 // app/components/InventoryList.tsx
+
+"use client"
+
 import React from 'react';
 import { Box, Button, List, ListItem } from '@chakra-ui/react';
 import useInventory from '../hooks/useInventory';
