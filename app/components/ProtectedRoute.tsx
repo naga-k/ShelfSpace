@@ -1,39 +1,28 @@
-// app/components/ProtectedRoute.tsx
+import React from 'react';
+import { Navigate, Route } from 'react-router-dom';
 
-'use client';
-
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Box, Text } from '@chakra-ui/react';
-import useAuth from '../hooks/useAuth';
-
-interface ProtectedRouteProps {
-  children: React.ReactNode;
+interface Auth {
+  // Define your Auth properties here
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-  const [redirecting, setRedirecting] = useState<boolean>(false);
+interface ProtectedRouteProps {
+  auth: Auth | undefined;
+  component: React.ComponentType<any>;
+  path: string;
+}
 
-  useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        setRedirecting(true);
-        router.push('/login');
-      }
-    }
-  }, [user, loading, router]);
-
-  if (loading || redirecting) {
-    return <Text>Loading...</Text>;
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ auth, component: Component, path }) => {
+  if (auth === undefined) {
+    // Handle the undefined case, maybe redirect to a login page or show a loading spinner
+    return <Navigate to="/login" />;
   }
 
-  if (!user) {
-    return null; // Rendering nothing while redirecting
-  }
-
-  return <>{children}</>;
+  return (
+    <Route
+      path={path}
+      element={auth ? <Component /> : <Navigate to="/login" />}
+    />
+  );
 };
 
 export default ProtectedRoute;

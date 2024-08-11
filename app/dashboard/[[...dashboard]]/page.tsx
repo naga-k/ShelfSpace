@@ -6,39 +6,30 @@ import { Box, Heading, Text, Button } from '@chakra-ui/react';
 import InventoryForm from '../../components/InventoryForm'; // Adjust the path as necessary
 import InventoryList from '../../components/InventoryList'; // Adjust the path as necessary
 import useAuth from '../../hooks/useAuth'; // Adjust the path as necessary
+import { auth } from '../../firebase'; // Import the auth object
 
 const Dashboard: React.FC = () => {
     console.log('Dashboard.tsx rendering');
-    const { user, loading, logout } = useAuth();
+
+    const authData = useAuth(auth!);
     const router = useRouter();
 
     useEffect(() => {
-        console.log('Loading:', loading);
-        console.log('User:', user);
-
-        if (!loading && !user) {
-            console.log('Redirecting to /login');
+        if (!authData.user) {
             router.push('/login');
         }
-    }, [user, loading, router]);
+    }, [authData.user, router]);
 
-    const handleLogout = () => {
-        logout(); // Call the logout function from the useAuth hook
-        router.push('/'); // Redirect to the homepage
-    };
-
-    if (loading) {
-        return <Text>Loading...</Text>;
-    }
-
-    if (!user) {
-        return null; // Rendering nothing while redirecting
+    // Ensure auth is not undefined
+    if (!auth) {
+        return <div>Loading...</div>;
     }
 
     return (
-        <Box className="container" p={4}>
-            <Heading as="h1" mb={4}>Inventory Management</Heading>
-            <Button onClick={handleLogout} mb={4}>Log Out</Button>
+        <Box>
+            <Heading>Dashboard</Heading>
+            <Text>Welcome to the dashboard!</Text>
+            <Button onClick={authData.logout}>Logout</Button>
             <InventoryForm />
             <InventoryList />
         </Box>

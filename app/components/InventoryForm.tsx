@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react';
 import useInventory from '../hooks/useInventory';
 import { Box, Button, Input } from '@chakra-ui/react';
