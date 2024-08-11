@@ -4,10 +4,12 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { FirebaseApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 
 let firebaseApp: FirebaseApp | null = null;
 let firestore: ReturnType<typeof getFirestore> | null = null;
 let analytics: ReturnType<typeof getAnalytics> | null = null;
+let auth: ReturnType<typeof getAuth> | null = null;
 
 const initializeFirebase = async () => {
 
@@ -24,6 +26,7 @@ const initializeFirebase = async () => {
 
     firebaseApp = initializeApp(firebaseConfig);
     firestore = getFirestore(firebaseApp);
+    auth = getAuth(firebaseApp);
 
     try {
       if (await isSupported()) {
@@ -37,4 +40,4 @@ const initializeFirebase = async () => {
 
 initializeFirebase();
 
-export { firestore, analytics };
+export { firestore, analytics, auth };

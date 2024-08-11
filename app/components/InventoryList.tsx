@@ -1,22 +1,23 @@
 // app/components/InventoryList.tsx
-'use client';
-
 import React from 'react';
+import { Box, Button, List, ListItem } from '@chakra-ui/react';
 import useInventory from '../hooks/useInventory';
 
 const InventoryList: React.FC = () => {
   const { inventory, deleteItem, updateItem } = useInventory();
 
   return (
-    <ul>
+    <List>
       {inventory.map(item => (
-        <li key={item.id}>
-          {item.name} - {item.count}
-          <button onClick={() => deleteItem(item.id)}>Delete</button>
-          <button onClick={() => updateItem(item.id, item.name, item.count)}>Update</button>
-        </li>
+        <ListItem key={item.id}>
+          <Box>
+            {item.name} - {item.count}
+          </Box>
+          <Button onClick={() => deleteItem(item.id)}>Delete</Button>
+          <Button onClick={() => updateItem(item.id, item.name, item.count)}>Update</Button>
+        </ListItem>
       ))}
-    </ul>
+    </List>
   );
 };
 

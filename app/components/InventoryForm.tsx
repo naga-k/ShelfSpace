@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import useInventory from '../hooks/useInventory';
+import { Box, Button, Input } from '@chakra-ui/react';
 
 const InventoryForm: React.FC = () => {
   const { addItem } = useInventory();
@@ -18,21 +19,21 @@ const InventoryForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
+    <Box as="form" onSubmit={handleSubmit}>
+      <Input
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Item name"
       />
-      <input
+      <Input
         type="number"
         value={count === undefined ? '' : count} // Display empty string if count is undefined
         onChange={(e) => setCount(e.target.value ? parseInt(e.target.value, 10) : undefined)} // Parse to number or set undefined
         placeholder="Item count"
       />
-      <button type="submit">Add Item</button>
-    </form>
+      <Button type="submit">Add Item</Button>
+    </Box>
   );
 };
 
