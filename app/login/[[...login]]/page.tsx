@@ -4,9 +4,10 @@ import React, { useState } from 'react';
 import { Box, Button, FormControl, FormLabel, Heading, Input, Text, Spinner, Tabs, TabList, TabPanels, Tab, TabPanel, useToast } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import useAuth from '../../hooks/useAuth';
+import { auth } from '../../firebase'; // Import auth instance
 
 const Auth: React.FC = () => {
-  const { loginWithEmail, loginWithGoogle, signUpWithEmail } = useAuth();
+  const { loginWithEmail, loginWithGoogle, signUpWithEmail } = useAuth(auth!);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -16,6 +17,7 @@ const Auth: React.FC = () => {
   const toast = useToast();
   const router = useRouter();
 
+  // Login with email
   const handleLoginWithEmail = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
@@ -29,7 +31,7 @@ const Auth: React.FC = () => {
         duration: 5000,
         isClosable: true,
       });
-      router.push('/dashboard'); // Redirect to the dashboard upon successful login
+      router.push('/dashboard'); // Redirect to dashboard
     } catch (err) {
       console.error('Login with email failed:', err);
       setError('Failed to login. Please try again.');
@@ -38,12 +40,13 @@ const Auth: React.FC = () => {
     }
   };
 
+  // Sign up with email
   const handleSignUpWithEmail = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
 
-    // Password match validation
+    // Check if passwords match
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       setLoading(false);
@@ -58,7 +61,7 @@ const Auth: React.FC = () => {
         duration: 5000,
         isClosable: true,
       });
-      router.push('/dashboard'); // Redirect to the dashboard upon successful signup
+      router.push('/dashboard'); // Redirect to dashboard
     } catch (err) {
       console.error('Sign up with email failed:', err);
       setError('Failed to sign up. Please try again.');
@@ -67,13 +70,14 @@ const Auth: React.FC = () => {
     }
   };
 
+  // Google login
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError(null);
 
     try {
       await loginWithGoogle();
-      router.push('/dashboard'); // Redirect to the dashboard upon successful Google login
+      router.push('/dashboard'); // Redirect to dashboard
     } catch (err) {
       console.error('Login with Google failed:', err);
       setError('Failed to login with Google. Please try again.');
