@@ -6,32 +6,38 @@ const useInventory = () => {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
 
   useEffect(() => {
+    // Fetch initial inventory
     const fetchInventory = async () => {
       const items = await InventoryService.getInventory();
       setInventory(items);
     };
 
-    fetchInventory();
+    fetchInventory(); // Initial fetch
+
+    // Subscribe to real-time updates
+    const unsubscribe = InventoryService.subscribeToInventoryUpdates((items) => {
+      setInventory(items);
+    });
+
+    return () => unsubscribe(); // Cleanup subscription on unmount
   }, []);
 
   const addItem = async (name: string, count: number) => {
     const newItem = await InventoryService.addItem(name, count);
-    setInventory((prev) => [...prev, newItem]);
+    // Optionally fetch the updated inventory or rely on real-time updates
   };
 
   const deleteItem = async (id: string) => {
     await InventoryService.deleteItem(id);
-    setInventory((prev) => prev.filter((item) => item.id !== id));
+    // Optionally fetch the updated inventory or rely on real-time updates
   };
 
   const updateItem = async (id: string, name: string, count: number) => {
     await InventoryService.updateItem(id, name, count);
-    setInventory((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, name, count } : item))
-    );
+    // Optionally fetch the updated inventory or rely on real-time updates
   };
 
   return { inventory, addItem, deleteItem, updateItem };
 };
 
-export default useInventory; // Ensure this is default export
+export default useInventory;
