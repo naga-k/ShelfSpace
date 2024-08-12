@@ -1,4 +1,4 @@
-// hooks/useAuth.tsx
+//hooks/useAuth.tsx
 
 import { useState, useEffect, useCallback } from 'react';
 import {
@@ -30,21 +30,20 @@ const useAuth = (auth: Auth | undefined): AuthState => {
   useEffect(() => {
     if (!auth) {
       console.error('Firebase auth is not initialized');
+      setLoading(false); // Ensure loading is set to false if auth is not available
       return;
     }
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        console.log('User signed in:', {
-          email: firebaseUser.email,
-          uid: firebaseUser.uid,
-        });
         setUser(firebaseUser);
       } else {
-        console.log('No user signed in');
         setUser(null);
       }
-      setLoading(false);
+      setLoading(false); // Ensure loading is set to false
+    }, (err) => {
+      setError(err.message);
+      setLoading(false); // Ensure loading is set to false in case of error
     });
 
     return () => {
@@ -61,12 +60,9 @@ const useAuth = (auth: Auth | undefined): AuthState => {
 
     setLoading(true);
     try {
-      console.log('Attempting to log in with email:', email);
       await signInWithEmailAndPassword(auth, email, password);
-      console.log('Successfully logged in with email');
     } catch (err: any) {
       setError(`Error logging in with email: ${err.message}`);
-      console.error('Error logging in with email:', err);
     } finally {
       setLoading(false);
     }
@@ -80,12 +76,9 @@ const useAuth = (auth: Auth | undefined): AuthState => {
 
     setLoading(true);
     try {
-      console.log('Attempting to sign up with email:', email);
       await createUserWithEmailAndPassword(auth, email, password);
-      console.log('Successfully signed up with email');
     } catch (err: any) {
       setError(`Error signing up with email: ${err.message}`);
-      console.error('Error signing up with email:', err);
     } finally {
       setLoading(false);
     }
@@ -99,12 +92,9 @@ const useAuth = (auth: Auth | undefined): AuthState => {
 
     setLoading(true);
     try {
-      console.log('Attempting to log out');
       await signOut(auth);
-      console.log('Successfully logged out');
     } catch (err: any) {
       setError(`Error logging out: ${err.message}`);
-      console.error('Error logging out:', err);
     } finally {
       setLoading(false);
     }
@@ -120,12 +110,9 @@ const useAuth = (auth: Auth | undefined): AuthState => {
 
     setLoading(true);
     try {
-      console.log('Attempting to log in with Google');
       await signInWithPopup(auth, provider);
-      console.log('Successfully logged in with Google');
     } catch (err: any) {
       setError(`Error logging in with Google: ${err.message}`);
-      console.error('Error logging in with Google:', err);
     } finally {
       setLoading(false);
     }

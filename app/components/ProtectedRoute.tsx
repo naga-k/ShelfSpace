@@ -20,16 +20,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       if (!user) {
         setRedirecting(true);
         router.push('/login');
+      } else {
+        setRedirecting(false);
       }
     }
   }, [user, loading, router]);
 
   if (loading || redirecting) {
-    return <Text>Loading...</Text>;
-  }
-
-  if (!user) {
-    return null; // Rendering nothing while redirecting
+    return (
+      <Box p={4} textAlign="center">
+        <Text>Loading...</Text>
+      </Box>
+    );
   }
 
   return <>{children}</>;
