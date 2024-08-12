@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { InventoryService } from '../services/InventoryService';
+import { InventoryService } from '../lib/InventoryService';
 import { InventoryItem } from '../utils/types';
 
 const useInventory = () => {

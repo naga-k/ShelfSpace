@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import { Box, Button, VStack } from '@chakra-ui/react';
-import useInventory from '../hooks/useInventory';
+import useInventory from '../../hooks/useInventory';
 import InventoryItem from './InventoryItem'; // Import the InventoryItem component
 
 const InventoryList: React.FC = () => {

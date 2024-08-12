@@ -1,4 +1,4 @@
-//hooks/useAuth.tsx
+// hooks/useAuth.tsx
 
 import { useState, useEffect, useCallback } from 'react';
 import {
