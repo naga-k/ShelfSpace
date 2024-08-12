@@ -8,21 +8,21 @@ import { auth } from './firebase'; // Import the auth object
 
 const Home: React.FC = () => {
   const router = useRouter();
-  const { user, loading } = useAuth(auth!); // Assuming useAuth provides user and loading status
+  const { user, loading } = useAuth(auth); // Assuming useAuth provides user and loading status
 
   useEffect(() => {
+    console.log('Loading:', loading); // Debugging log
+    console.log('User:', user); // Debugging log
+
     if (!loading && user) {
       router.push('/dashboard'); // Redirect to dashboard if user is logged in
     }
   }, [user, loading, router]);
 
+ 
   const handleLoginClick = () => {
     router.push('/login'); // Navigate to the login page
   };
-
-  if (loading) {
-    return <Text>Loading...</Text>; // Show loading state while authentication status is being determined
-  }
 
   return (
     <Box className="container" p={4}>

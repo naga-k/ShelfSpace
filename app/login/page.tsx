@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { Box, Button, FormControl, FormLabel, Heading, Input, Text, Spinner, Tabs, TabList, TabPanels, Tab, TabPanel, useToast } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
-import useAuth from '../../hooks/useAuth';
-import { auth } from '../../firebase'; // Import auth instance
+import useAuth from '../hooks/useAuth';
+import { auth } from '../firebase'; // Import auth instance
 
 const Auth: React.FC = () => {
-  const { loginWithEmail, loginWithGoogle, signUpWithEmail } = useAuth(auth!);
+  const { loginWithEmail, loginWithGoogle, signUpWithEmail } = useAuth(auth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

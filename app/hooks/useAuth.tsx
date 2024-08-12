@@ -1,14 +1,19 @@
-import { useState, useEffect, useCallback } from 'react'; // Import useCallback from react
-import { Auth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, createUserWithEmailAndPassword } from 'firebase/auth';
+// hooks/useAuth.tsx
 
-interface User {
-  email: string;
-  uid: string;
-  // Add other user properties as needed
-}
+import { useState, useEffect, useCallback } from 'react';
+import {
+  Auth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signOut,
+  createUserWithEmailAndPassword,
+  User as FirebaseUser,
+} from 'firebase/auth';
 
 interface AuthState {
-  user: User | null;
+  user: FirebaseUser | null;
   loading: boolean;
   error: string | null;
   loginWithEmail: (email: string, password: string) => Promise<void>;
@@ -17,8 +22,8 @@ interface AuthState {
   logout: () => Promise<void>;
 }
 
-const useAuth = (auth: Auth): AuthState => {
-  const [user, setUser] = useState<User | null>(null);
+const useAuth = (auth: Auth | undefined): AuthState => {
+  const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,15 +35,22 @@ const useAuth = (auth: Auth): AuthState => {
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        const { email, uid } = firebaseUser;
-        setUser({ email: email || '', uid });
+        console.log('User signed in:', {
+          email: firebaseUser.email,
+          uid: firebaseUser.uid,
+        });
+        setUser(firebaseUser);
       } else {
+        console.log('No user signed in');
         setUser(null);
       }
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      console.log('Unsubscribed from auth state changes');
+    };
   }, [auth]);
 
   const loginWithEmail = async (email: string, password: string) => {
@@ -49,11 +61,12 @@ const useAuth = (auth: Auth): AuthState => {
 
     setLoading(true);
     try {
-      console.log('Logging in with email:', email);
+      console.log('Attempting to log in with email:', email);
       await signInWithEmailAndPassword(auth, email, password);
+      console.log('Successfully logged in with email');
     } catch (err: any) {
-      setError(err.message);
-      console.error('Error logging in with email', err);
+      setError(`Error logging in with email: ${err.message}`);
+      console.error('Error logging in with email:', err);
     } finally {
       setLoading(false);
     }
@@ -67,11 +80,12 @@ const useAuth = (auth: Auth): AuthState => {
 
     setLoading(true);
     try {
-      console.log('Signing up with email:', email);
+      console.log('Attempting to sign up with email:', email);
       await createUserWithEmailAndPassword(auth, email, password);
+      console.log('Successfully signed up with email');
     } catch (err: any) {
-      setError(err.message);
-      console.error('Error signing up with email', err);
+      setError(`Error signing up with email: ${err.message}`);
+      console.error('Error signing up with email:', err);
     } finally {
       setLoading(false);
     }
@@ -83,27 +97,37 @@ const useAuth = (auth: Auth): AuthState => {
       return;
     }
 
+    setLoading(true);
     try {
-      console.log('Logging out');
+      console.log('Attempting to log out');
       await signOut(auth);
-    } catch (error) {
-      console.error('Error logging out', error);
+      console.log('Successfully logged out');
+    } catch (err: any) {
+      setError(`Error logging out: ${err.message}`);
+      console.error('Error logging out:', err);
+    } finally {
+      setLoading(false);
     }
   }, [auth]);
 
   const loginWithGoogle = useCallback(async () => {
     if (!auth) {
-      console.error('Firebase auth is not initialized');
+      setError('Firebase auth is not initialized');
       return;
     }
 
     const provider = new GoogleAuthProvider();
 
+    setLoading(true);
     try {
-      console.log('Logging in with Google');
+      console.log('Attempting to log in with Google');
       await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error('Error logging in with Google', error);
+      console.log('Successfully logged in with Google');
+    } catch (err: any) {
+      setError(`Error logging in with Google: ${err.message}`);
+      console.error('Error logging in with Google:', err);
+    } finally {
+      setLoading(false);
     }
   }, [auth]);
 
