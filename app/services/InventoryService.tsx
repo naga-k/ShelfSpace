@@ -1,6 +1,4 @@
-// app/services/InventoryService.tsx
-
-import { firestore } from '../firebase';
+import { firestore } from '../firebase'; // Ensure this import is correct
 import { 
   collection, 
   addDoc, 
@@ -10,61 +8,83 @@ import {
   updateDoc, 
   onSnapshot, 
   CollectionReference, 
-  DocumentData 
+  DocumentData,
+  Firestore 
 } from 'firebase/firestore';
 import { InventoryItem } from '../utils/types';
 
-const getInventory = async (): Promise<InventoryItem[]> => {
+const ensureFirestore = (): Firestore => {
   if (!firestore) {
     throw new Error('Firestore is not initialized');
   }
-
-  const inventoryCollection: CollectionReference<DocumentData> = collection(firestore, 'inventory');
-  const snapshot = await getDocs(inventoryCollection);
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as InventoryItem));
+  return firestore;
 };
 
-const addItem = async (name: string, count: number): Promise<InventoryItem> => {
-  if (!firestore) {
-    throw new Error('Firestore is not initialized');
-  }
+const getInventory = async (userId: string): Promise<InventoryItem[]> => {
+  const firestoreInstance = ensureFirestore();
 
-  const inventoryCollection: CollectionReference<DocumentData> = collection(firestore, 'inventory');
-  const docRef = await addDoc(inventoryCollection, { name, count });
-  return { id: docRef.id, name, count };
+  try {
+    const inventoryCollection: CollectionReference<DocumentData> = collection(firestoreInstance, 'users', userId, 'inventory');
+    const snapshot = await getDocs(inventoryCollection);
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as InventoryItem));
+  } catch (error) {
+    console.error('Error fetching inventory:', error);
+    throw error;
+  } 
 };
 
-const deleteItem = async (id: string): Promise<void> => {
-  if (!firestore) {
-    throw new Error('Firestore is not initialized');
-  }
+const addItem = async (userId: string, name: string, count: number): Promise<InventoryItem> => {
+  const firestoreInstance = ensureFirestore();
 
-  const inventoryDoc = doc(firestore, 'inventory', id);
-  await deleteDoc(inventoryDoc);
+  try {
+    const inventoryCollection: CollectionReference<DocumentData> = collection(firestoreInstance, 'users', userId, 'inventory');
+    const docRef = await addDoc(inventoryCollection, { name, count });
+    return { id: docRef.id, name, count };
+  } catch (error) {
+    console.error('Error adding item:', error);
+    throw error;
+  }
 };
 
-const updateItem = async (id: string, name: string, count: number): Promise<void> => {
-  if (!firestore) {
-    throw new Error('Firestore is not initialized');
-  }
+const deleteItem = async (userId: string, id: string): Promise<void> => {
+  const firestoreInstance = ensureFirestore();
 
-  const inventoryDoc = doc(firestore, 'inventory', id);
-  await updateDoc(inventoryDoc, { name, count });
+  try {
+    const inventoryDoc = doc(firestoreInstance, 'users', userId, 'inventory', id);
+    await deleteDoc(inventoryDoc);
+  } catch (error) {
+    console.error('Error deleting item:', error);
+    throw error;
+  }
 };
 
-// Implement the subscribeToInventoryUpdates method
-const subscribeToInventoryUpdates = (callback: (items: InventoryItem[]) => void) => {
-  if (!firestore) {
-    throw new Error('Firestore is not initialized');
+const updateItem = async (userId: string, id: string, name: string, count: number): Promise<void> => {
+  const firestoreInstance = ensureFirestore();
+
+  try {
+    const inventoryDoc = doc(firestoreInstance, 'users', userId, 'inventory', id);
+    await updateDoc(inventoryDoc, { name, count });
+  } catch (error) {
+    console.error('Error updating item:', error);
+    throw error;
   }
+};
 
-  const inventoryCollection: CollectionReference<DocumentData> = collection(firestore, 'inventory');
-  const unsubscribe = onSnapshot(inventoryCollection, (snapshot) => {
-    const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as InventoryItem));
-    callback(items);
-  });
+const subscribeToInventoryUpdates = (userId: string, callback: (items: InventoryItem[]) => void) => {
+  const firestoreInstance = ensureFirestore();
 
-  return unsubscribe; // Return the unsubscribe function to stop listening
+  try {
+    const inventoryCollection: CollectionReference<DocumentData> = collection(firestoreInstance, 'users', userId, 'inventory');
+    const unsubscribe = onSnapshot(inventoryCollection, (snapshot) => {
+      const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as InventoryItem));
+      callback(items);
+    });
+
+    return unsubscribe;
+  } catch (error) {
+    console.error('Error subscribing to inventory updates:', error);
+    throw error;
+  }
 };
 
 export const InventoryService = { getInventory, addItem, deleteItem, updateItem, subscribeToInventoryUpdates };

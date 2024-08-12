@@ -1,40 +1,79 @@
 import { useState, useEffect } from 'react';
 import { InventoryService } from '../services/InventoryService';
 import { InventoryItem } from '../utils/types';
+import useAuth from '../hooks/useAuth';
+import { auth } from '../firebase';
 
 const useInventory = () => {
+  const { user, loading } = useAuth(auth);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [fetching, setFetching] = useState<boolean>(true);
 
   useEffect(() => {
-    // Fetch initial inventory
-    const fetchInventory = async () => {
-      const items = await InventoryService.getInventory();
-      setInventory(items);
-    };
+    if (!loading && user) {
+      const fetchInventory = async () => {
+        setFetching(true);
+        try {
+          const items = await InventoryService.getInventory(user.uid);
+          setInventory(items);
+        } catch (error) {
+          console.error('Error fetching inventory:', error);
+        } finally {
+          setFetching(false);
+        }
+      };
 
-    fetchInventory(); // Initial fetch
+      fetchInventory();
 
-    // Subscribe to real-time updates
-    const unsubscribe = InventoryService.subscribeToInventoryUpdates((items) => {
-      setInventory(items);
-    });
+      const unsubscribe = InventoryService.subscribeToInventoryUpdates(user.uid, (items: InventoryItem[]) => {
+        setInventory(items);
+      });
 
-    return () => unsubscribe(); // Cleanup subscription on unmount
-  }, []);
+      return () => unsubscribe();
+    } else if (!loading && !user) {
+      setInventory([]);
+    }
+  }, [user, loading]);
 
   const addItem = async (name: string, count: number) => {
-    const newItem = await InventoryService.addItem(name, count);
-    // Optionally fetch the updated inventory or rely on real-time updates
+    if (user) {
+      try {
+        const newItem = await InventoryService.addItem(user.uid, name, count);
+        setInventory((prev) => [...prev, newItem]);
+      } catch (error) {
+        console.error('Error adding item:', error);
+      }
+    } else {
+      console.error('User is not authenticated.');
+    }
   };
 
   const deleteItem = async (id: string) => {
-    await InventoryService.deleteItem(id);
-    // Optionally fetch the updated inventory or rely on real-time updates
+    if (user) {
+      try {
+        await InventoryService.deleteItem(user.uid, id);
+        setInventory((prev) => prev.filter((item) => item.id !== id));
+      } catch (error) {
+        console.error('Error deleting item:', error);
+      }
+    } else {
+      console.error('User is not authenticated.');
+    }
   };
 
   const updateItem = async (id: string, name: string, count: number) => {
-    await InventoryService.updateItem(id, name, count);
-    // Optionally fetch the updated inventory or rely on real-time updates
+    if (user) {
+      try {
+        await InventoryService.updateItem(user.uid, id, name, count);
+        setInventory((prev) =>
+          prev.map((item) => (item.id === id ? { ...item, name, count } : item))
+        );
+      } catch (error) {
+        console.error('Error updating item:', error);
+      }
+    } else {
+      console.error('User is not authenticated.');
+    }
   };
 
   return { inventory, addItem, deleteItem, updateItem };

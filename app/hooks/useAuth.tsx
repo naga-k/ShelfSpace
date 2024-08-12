@@ -35,10 +35,6 @@ const useAuth = (auth: Auth | undefined): AuthState => {
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        console.log('User signed in:', {
-          email: firebaseUser.email,
-          uid: firebaseUser.uid,
-        });
         setUser(firebaseUser);
       } else {
         console.log('No user signed in');

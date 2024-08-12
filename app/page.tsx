@@ -11,8 +11,6 @@ const Home: React.FC = () => {
   const { user, loading } = useAuth(auth); // Assuming useAuth provides user and loading status
 
   useEffect(() => {
-    console.log('Loading:', loading); // Debugging log
-    console.log('User:', user); // Debugging log
 
     if (!loading && user) {
       router.push('/dashboard'); // Redirect to dashboard if user is logged in
