@@ -6,8 +6,8 @@
 import { Inter } from 'next/font/google';  // Google font
 import { ChakraProvider } from '@chakra-ui/react';  // Chakra UI provider
 import { useEffect } from 'react';
-import { initializeFirebase } from './firebase';  // Adjust the import path as necessary
-import ErrorBoundary from './components/ErrorBoundary';  // Error boundary component
+import { initializeFirebase } from '../firebase';  // Adjust the import path as necessary
+import ErrorBoundary from '../components/ErrorBoundary';  // Error boundary component
 import Head from 'next/head';  // Import Head component
 
 const inter = Inter({ subsets: ['latin'] });

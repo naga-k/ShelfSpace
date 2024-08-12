@@ -1,10 +1,13 @@
-"use client";
+'use client'
 
 import React, { useEffect } from 'react';
 import { Box, Button, Heading, Text, VStack, Center } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
-import useAuth from './hooks/useAuth'; // Adjust the path as necessary
-import { auth } from './firebase'; // Import the auth object
+import useAuth from '../hooks/useAuth'; // Adjust the path as necessary
+import { auth } from '../firebase'; // Import the auth object
+import { motion } from 'framer-motion'; // Import motion from Framer Motion
+
+const MotionButton = motion(Button); // Create a motion-enhanced Button component
 
 const Home: React.FC = () => {
   const router = useRouter();
@@ -25,12 +28,18 @@ const Home: React.FC = () => {
 
   return (
     <Center h="100vh" bg="gray.100"> {/* Center content vertically and horizontally */}
-      <VStack spacing={4} p={4} bg="white" borderRadius="md" boxShadow="md" textAlign="center">
-        <Heading as="h1" mb={4}>Welcome to ShelfSpace</Heading>
+      <VStack spacing={4} p={8} bg="white" borderRadius="md" boxShadow="md" textAlign="center">
+        <Heading as="h1" mb={4}>ShelfSpace</Heading>
         <Text mb={4}>Please log in or sign up to continue.</Text>
-        <Button colorScheme="teal" onClick={handleLoginClick}>
+        <MotionButton
+          colorScheme="teal"
+          onClick={handleLoginClick}
+          whileHover={{ scale: 1.1 }} // Scale up on hover
+          whileTap={{ scale: 0.9 }} // Scale down on click
+          transition={{ duration: 0.2 }} // Transition duration
+        >
           Login / Sign Up
-        </Button>
+        </MotionButton>
       </VStack>
     </Center>
   );

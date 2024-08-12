@@ -3,7 +3,7 @@
 
 import React, { createContext, useState, ReactNode, useContext, useEffect } from 'react';
 import { InventoryItem } from '../utils/types';
-import { InventoryService } from '../services/InventoryService';
+import { InventoryService } from '../lib/InventoryService';
 
 type InventoryContextType = {
   inventory: InventoryItem[];

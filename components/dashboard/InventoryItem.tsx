@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Box, Button, Input, Flex } from '@chakra-ui/react';
+import { Box, Button, Flex, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Input } from '@chakra-ui/react';
 
 interface InventoryItemProps {
   item: { id: string; name: string; count: number };
@@ -28,6 +28,15 @@ const InventoryItem: React.FC<InventoryItemProps> = ({
   startEditing,
   deleteItem
 }) => {
+  const handleUpdateWithDeletion = () => {
+    const count = parseInt(editCount, 10);
+    if (count === 0) {
+      deleteItem();
+    } else {
+      handleUpdate();
+    }
+  };
+
   return (
     <Box
       overflowX="auto" // Allow horizontal scrolling
@@ -57,13 +66,21 @@ const InventoryItem: React.FC<InventoryItemProps> = ({
         </Box>
         <Box flex="1" textAlign="left" p={2} borderWidth={1} borderRadius="md" minWidth="80px" ml={2}>
           {isEditing ? (
-            <Input
-              type="number"
+            <NumberInput
               value={editCount}
-              onChange={(e) => setEditCount(e.target.value)}
+              onChange={(valueString) => setEditCount(valueString)}
+              min={0}
+              step={1}
               mb={2}
-              placeholder="Item count"
-            />
+              _placeholder="Item count"
+              allowMouseWheel
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
           ) : (
             item.count
           )}
@@ -71,7 +88,7 @@ const InventoryItem: React.FC<InventoryItemProps> = ({
         <Flex ml={2} wrap="nowrap">
           {isEditing ? (
             <>
-              <Button onClick={handleUpdate} colorScheme="teal" mr={2}>Save</Button>
+              <Button onClick={handleUpdateWithDeletion} colorScheme="teal" mr={2}>Save</Button>
               <Button onClick={handleCancel} variant="outline">Cancel</Button>
             </>
           ) : (

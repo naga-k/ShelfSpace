@@ -3,10 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, Heading, Text, Button, VStack, Container, Center } from '@chakra-ui/react';
-import InventoryForm from './InventoryForm'; // Adjust the path as necessary
-import InventoryList from './InventoryList'; // Adjust the path as necessary
-import useAuth from '../hooks/useAuth'; // Adjust the path as necessary
-import { auth } from '../firebase'; // Import the auth object
+import InventoryForm from '../../components/dashboard/InventoryForm'; // Adjust the path as necessary
+import InventoryList from '../../components/dashboard/InventoryList'; // Adjust the path as necessary
+import useAuth from '../../hooks/useAuth'; // Adjust the path as necessary
+import { auth } from '../../firebase'; // Import the auth object
 
 const Dashboard: React.FC = () => {
     const { user, loading, logout } = useAuth(auth);
@@ -19,7 +19,7 @@ const Dashboard: React.FC = () => {
             const timer = setTimeout(() => {
                 if (!user) {
                     console.log('User not found, redirecting to login');
-                    router.push('/login');
+                    router.push('/');
                 } else {
                     setIsLoading(false); // Set loading to false if user is authenticated
                 }
