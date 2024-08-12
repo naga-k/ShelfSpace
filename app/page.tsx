@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import React, { useEffect } from 'react';
-import { Box, Button, Heading, Text } from '@chakra-ui/react';
+import { Box, Button, Heading, Text, VStack, Center } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import useAuth from './hooks/useAuth'; // Adjust the path as necessary
 import { auth } from './firebase'; // Import the auth object
@@ -19,19 +19,20 @@ const Home: React.FC = () => {
     }
   }, [user, loading, router]);
 
- 
   const handleLoginClick = () => {
     router.push('/login'); // Navigate to the login page
   };
 
   return (
-    <Box className="container" p={4}>
-      <Heading as="h1" mb={4}>Welcome to Our Application</Heading>
-      <Text mb={4}>Please log in or sign up to continue.</Text>
-      <Button colorScheme="teal" onClick={handleLoginClick}>
-        Go to Login
-      </Button>
-    </Box>
+    <Center h="100vh" bg="gray.100"> {/* Center content vertically and horizontally */}
+      <VStack spacing={4} p={4} bg="white" borderRadius="md" boxShadow="md" textAlign="center">
+        <Heading as="h1" mb={4}>Welcome to ShelfSpace</Heading>
+        <Text mb={4}>Please log in or sign up to continue.</Text>
+        <Button colorScheme="teal" onClick={handleLoginClick}>
+          Login / Sign Up
+        </Button>
+      </VStack>
+    </Center>
   );
 };
 

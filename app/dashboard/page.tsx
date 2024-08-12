@@ -1,51 +1,52 @@
-'use client'; // Add this directive to mark the component as a Client Component
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Box, Heading, Text, Button } from '@chakra-ui/react';
-import InventoryForm from '../components/InventoryForm'; // Adjust the path as necessary
-import InventoryList from '../components/InventoryList'; // Adjust the path as necessary
+import { Box, Heading, Text, Button, VStack, Container, Center } from '@chakra-ui/react';
+import InventoryForm from './InventoryForm'; // Adjust the path as necessary
+import InventoryList from './InventoryList'; // Adjust the path as necessary
 import useAuth from '../hooks/useAuth'; // Adjust the path as necessary
 import { auth } from '../firebase'; // Import the auth object
 
 const Dashboard: React.FC = () => {
-    console.log('Dashboard.tsx rendering');
-
-    const authData = useAuth(auth);
+    const { user, loading, logout } = useAuth(auth);
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(true); // Track loading state
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        // Use a timeout to ensure we wait for auth state to be settled
-        const timer = setTimeout(() => {
-            if (authData.loading) {
-                setIsLoading(true);
-            } else {
-                setIsLoading(false);
-                if (!authData.user) {
+        // Check loading and user state
+        if (!loading) {
+            const timer = setTimeout(() => {
+                if (!user) {
                     console.log('User not found, redirecting to login');
                     router.push('/login');
+                } else {
+                    setIsLoading(false); // Set loading to false if user is authenticated
                 }
-            }
-        }, 100); // 100ms timeout to wait for auth state
+            }, 100);
 
-        // Cleanup timeout on unmount
-        return () => clearTimeout(timer);
-    }, [authData.user, authData.loading, router]);
+            return () => clearTimeout(timer);
+        }
+    }, [user, loading, router]);
 
-    // Show a loading state while waiting for authentication status
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Center h="100vh">Loading...</Center>;
     }
 
     return (
-        <Box>
-            <Heading>Dashboard</Heading>
-            <Text>Welcome to the dashboard!</Text>
-            <Button onClick={authData.logout}>Logout</Button>
-            <InventoryForm />
-            <InventoryList />
-        </Box>
+        <Container maxW="container.lg" p={4}>
+            <VStack spacing={6} align="center" width="full">
+                <Heading as="h1" size="2xl" textAlign="center">Dashboard</Heading>
+                <Text fontSize="lg" textAlign="center">Here you can add or edit items in your ShelfSpace!</Text>
+                <Box width="full" maxW="container.md">
+                    <InventoryList />
+                </Box>
+                <Box width="full" maxW="container.md">
+                    <InventoryForm />
+                </Box>
+                <Button colorScheme="teal" onClick={() => logout()}>Logout</Button>
+            </VStack>
+        </Container>
     );
 };
 

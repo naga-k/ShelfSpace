@@ -2,7 +2,7 @@
 
 'use client';
 
-import './globals.css';  // Global styles
+// import './globals.css';  // Global styles
 import { Inter } from 'next/font/google';  // Google font
 import { ChakraProvider } from '@chakra-ui/react';  // Chakra UI provider
 import { useEffect } from 'react';
