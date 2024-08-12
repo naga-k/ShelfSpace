@@ -22,7 +22,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, loading }) => {
         <FormControl id="email" mb={4}>
           <FormLabel>Email:</FormLabel>
           <InputGroup>
-            <InputLeftElement pointerEvents="none" children={<Icon as={HiMail} boxSize={5} color="gray.500" />} />
+            <InputLeftElement pointerEvents="none">
+              <Icon as={HiMail} boxSize={5} color="gray.500" />
+            </InputLeftElement>
             <Input
               type="email"
               value={email}
